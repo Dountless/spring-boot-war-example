@@ -1,0 +1,56 @@
+pipeline{
+    agent{
+        label "master"
+    }
+    tools {
+        maven 'maven' 
+    }
+
+
+    stages{
+        stage("Git clone"){
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Dountless/spring-boot-war-example.git']])
+            }
+        }
+        stage("Test"){
+            steps{
+                echo "Java project testing..."
+                sh 'mvn test'
+                
+            }
+
+        }
+        stage("Build"){
+            steps{
+                echo "java project building"
+                sh 'mvn install'
+            }
+
+        }
+        stage("Deploy to test"){
+            steps{
+                deploy adapters: [tomcat9(credentialsId: 'tomcat9', path: '', url: 'http://172.31.93.116:8011')], contextPath: '/app', war: '**/*.war' 
+                
+            }
+
+        }
+        stage("Deploy to prod"){
+            steps{
+                echo "========executing A========"
+            }
+
+        }
+    }
+    post{
+        always{
+            echo "========always========"
+        }
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}
