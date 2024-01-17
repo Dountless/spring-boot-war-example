@@ -45,12 +45,15 @@ pipeline{
     post{
         always{
             echo "========always========"
+            
         }
         success{
             echo "========pipeline executed successfully ========"
+            slackSend channel: 'mavenjenkins', message: 'success'
         }
         failure{
             echo "========pipeline execution failed========"
+            slackSend channel: 'mavenjenkins', message: 'fail'
         }
     }
 }
